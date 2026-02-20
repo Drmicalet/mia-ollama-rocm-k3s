@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-rocm
+  namespace: mia-ollama
+  labels:
+    app: ollama-rocm
+    component: ai-inference
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: ollama-rocm
+  template:
+    metadata:
+      labels:
+        app: ollama-rocm
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: cachitos
+      
+      containers:
+      - name: ollama
+        image: localhost/mia-ollama-rocm:v20a
+        imagePullPolicy: Never
+        
+        ports:
+        - containerPort: 11434
+          name: api
+        
+        env:
+        - name: HSA_OVERRIDE_GFX_VERSION
+          value: "10.3.0"
+        - name: OLLAMA_HOST
+          value: "0.0.0.0:11434"
+        
+        volumeMounts:
+        - name: models
+          mountPath: /root/.ollama
+        - name: rocm
+          mountPath: /opt/rocm
+          readOnly: true
+        - name: kfd
+          mountPath: /dev/kfd
+        - name: dri
+          mountPath: /dev/dri
+        
+        resources:
+          limits:
+            memory: "32Gi"
+            cpu: "8"
+          requests:
+            memory: "8Gi"
+            cpu: "2"
+        
+        securityContext:
+          privileged: true
+      
+      volumes:
+      - name: models
+        persistentVolumeClaim:
+          claimName: ollama-models
+      - name: rocm
+        hostPath:
+          path: /opt/rocm
+          type: Directory
+      - name: kfd
+        hostPath:
+          path: /dev/kfd
+          type: CharDevice
+      - name: dri
+        hostPath:
+          path: /dev/dri
+          type: Directory
+      
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"

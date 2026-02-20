@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ollama-config
+  namespace: mia-ollama
+data:
+  HSA_OVERRIDE_GFX_VERSION: "10.3.0"
+  OLLAMA_HOST: "0.0.0.0:11434"
+  OLLAMA_ORIGINS: "*"
+  # Modelos preinstalados (detectados automáticamente)
+  MODELS: "gemma2:9b
+gemma2:2b
+mistral:7b
+qwen2.5:7b
+glm4:9b"

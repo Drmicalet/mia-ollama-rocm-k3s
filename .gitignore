@@ -1,0 +1,20 @@
+# Backups
+*.tar.gz
+*.bak
+backup/
+
+# Logs
+*.log
+
+# Secrets (nunca subir)
+*-secret.yaml
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

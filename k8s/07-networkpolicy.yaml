@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ollama-netpol
+  namespace: mia-ollama
+spec:
+  podSelector:
+    matchLabels:
+      app: ollama-rocm
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: mia-ollama
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: mia
+    ports:
+    - protocol: TCP
+      port: 11434
+  egress:
+  - {}  # Permitir todo el tráfico de salida (para descarga de modelos)
