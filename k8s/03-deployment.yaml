@@ -5,7 +5,6 @@ metadata:
   namespace: mia-ollama
   labels:
     app: ollama-rocm
-    component: ai-inference
 spec:
   replicas: 1
   strategy:
@@ -25,17 +24,13 @@ spec:
       - name: ollama
         image: localhost/mia-ollama-rocm:v20a
         imagePullPolicy: Never
-        
         ports:
         - containerPort: 11434
-          name: api
-        
         env:
         - name: HSA_OVERRIDE_GFX_VERSION
           value: "10.3.0"
         - name: OLLAMA_HOST
           value: "0.0.0.0:11434"
-        
         volumeMounts:
         - name: models
           mountPath: /root/.ollama
@@ -46,7 +41,6 @@ spec:
           mountPath: /dev/kfd
         - name: dri
           mountPath: /dev/dri
-        
         resources:
           limits:
             memory: "32Gi"
@@ -54,7 +48,6 @@ spec:
           requests:
             memory: "8Gi"
             cpu: "2"
-        
         securityContext:
           privileged: true
       
@@ -65,15 +58,12 @@ spec:
       - name: rocm
         hostPath:
           path: /opt/rocm
-          type: Directory
       - name: kfd
         hostPath:
           path: /dev/kfd
-          type: CharDevice
       - name: dri
         hostPath:
           path: /dev/dri
-          type: Directory
       
       tolerations:
       - key: "node-role.kubernetes.io/master"
